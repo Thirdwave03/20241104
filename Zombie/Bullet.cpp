@@ -110,7 +110,7 @@ void Bullet::FixedUpdate(float dt)
 		if (Utils::CheckCollision(debugBox.GetShape(), zombieBox))
 		{
 			SOUND_MGR.PlaySfx("sound/hit.wav");
-			zombie->OnDamage(damage);
+			zombie->OnDamage((int)((float)damage * Utils::RandomRange(0.8f,1.2f)));
 			sceneGame->OnBulletHit(this);
 			break;
 		}

@@ -4,7 +4,6 @@ class ZombieDieEffect :
     public SpriteGo
 { 
 protected:
-    float fadeoutTimer = 5;
     float timer = 10;
 
 public:
@@ -14,5 +13,6 @@ public:
     ZombieDieEffect& operator=(const ZombieDieEffect& other) = default;
     void Update(float dt) override;
 
+    void SetTimer();
 };
 

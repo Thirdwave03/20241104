@@ -162,6 +162,7 @@
     </ClCompile>
     <ClCompile Include="Framework\TextGo.cpp" />
     <ClCompile Include="Framework\Utils.cpp" />
+    <ClCompile Include="Indicator.cpp" />
     <ClCompile Include="Item.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SceneGame.cpp" />
@@ -169,8 +170,8 @@
     <ClCompile Include="TileMap.cpp" />
     <ClCompile Include="UiGameOver.cpp" />
     <ClCompile Include="UiHud.cpp" />
+    <ClCompile Include="UiNotification.cpp" />
     <ClCompile Include="UiUpgrade.cpp" />
-    <ClCompile Include="UserInterface.cpp" />
     <ClCompile Include="XXXGo.cpp" />
     <ClCompile Include="Zombie.cpp" />
     <ClCompile Include="ZombieDieEffect.cpp" />
@@ -193,6 +194,7 @@
     <ClInclude Include="Framework\stdafx.h" />
     <ClInclude Include="Framework\TextGo.h" />
     <ClInclude Include="Framework\Utils.h" />
+    <ClInclude Include="Indicator.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SceneGame.h" />
@@ -200,8 +202,8 @@
     <ClInclude Include="TileMap.h" />
     <ClInclude Include="UiGameOver.h" />
     <ClInclude Include="UiHud.h" />
+    <ClInclude Include="UiNotification.h" />
     <ClInclude Include="UiUpgrade.h" />
-    <ClInclude Include="UserInterface.h" />
     <ClInclude Include="XXXGo.h" />
     <ClInclude Include="Zombie.h" />
     <ClInclude Include="ZombieDieEffect.h" />

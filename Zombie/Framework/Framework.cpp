@@ -11,6 +11,9 @@ void Framework::Init(int width, int height, const std::string& name)
     SCENE_MGR.Init();
     SOUND_MGR.Init();
     InputMgr::Init();
+
+    frameText.setPosition({});
+    frameText.setFont(FONT_MGR.Get("fonts/DS-DIGI.ttf"));
 }
 
 void Framework::Do()
@@ -41,8 +44,11 @@ void Framework::Do()
         SCENE_MGR.LateUpdate(deltaTime);
         SCENE_MGR.FixedUpdate(deltaTime);
 
+        FrameCheck();
+
         window.clear();
         SCENE_MGR.Draw(window);
+        window.draw(frameText);
         window.display();
     }
 }
@@ -51,4 +57,16 @@ void Framework::Release()
 {
     SCENE_MGR.Release();
     FONT_MGR.Unload("fonts/DS-DIGI.ttf");
+}
+
+void Framework::FrameCheck()
+{
+    currentFrameTime += realDeltaTime;
+    ++currentFrame;
+    if (currentFrameTime >= 1.f)
+    {
+        frameText.setString(std::to_string(currentFrame));
+        currentFrameTime = 0.f;
+        currentFrame = 0;
+    }
 }

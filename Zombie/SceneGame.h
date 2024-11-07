@@ -7,11 +7,12 @@ class Zombie;
 class Bullet;
 class Item;
 class DebugBox;
-class UserInterface;
 class UiHud;
 class UiUpgrade;
 class UiGameOver;
+class UiNotification;
 class ZombieDieEffect;
+class Indicator;
 enum class UpgradeTypes;
 
 class SceneGame :
@@ -23,6 +24,7 @@ protected:
 	UiHud* uiHud;
 	UiUpgrade* uiUpgrade = nullptr;
 	UiGameOver* uiGameOver = nullptr;
+	UiNotification* uiNotification = nullptr;
 
 	std::list<Zombie*> zombies; // active zombies
 	ObjectPool<Zombie> zombiePool;
@@ -37,13 +39,16 @@ protected:
 
 	std::list<ZombieDieEffect*> zombieDieEffects;
 	ObjectPool<ZombieDieEffect> zombieDieEffectPool;
-	
-	UserInterface* ui;
+
+	std::list<Indicator*> indicators;
+	ObjectPool<Indicator> indicatorPool;
 
 	float itemSpawnTimer = 0.f;
-	float itemSpawnDuration = 5.f;
+	float itemSpawnDuration = 10.f;
+	int itemSpawnSpeed = 100.f;
+
 	float zombieSpawnTimer = 0.f;
-	float zombieSpawnDuration = 5.f;
+	float zombieSpawnDuration = 7.f;
 
 	bool isDead = false;
 	bool isUpgrading = false;
@@ -75,6 +80,7 @@ public:
 
 	const std::list<Zombie*>& GetZombieList() { return zombies; }
 	const std::list<Item*>& GetItemList() { return items; }
+	const std::list<Indicator*>& GetIndicatorList() { return indicators; }
 
 	void OnZombieDie(Zombie* zombie);
 	void OnBulletHit(Bullet* bullet);
@@ -82,5 +88,14 @@ public:
 	void OnUpgrade(UpgradeTypes upgrade);
 
 	void SetUpgrading(bool isUpgrading);
+
+	void CallUiNoBullet();
+	void CallUiReloading();
+	void CallUiNoSpare();
+	void SetUiNotificationActive(bool active);
+	void SetItemSpawnSpeed(int spawnSpeed);
+	int GetItemSpawnSpeed();
+
+	void SetIndicator(int info, sf::Sprite sprite, sf::Color color = sf::Color::Red);
 };
 

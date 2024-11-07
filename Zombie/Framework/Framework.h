@@ -20,6 +20,9 @@ protected:
 	float deltaTime = 0.f;
 	float realTime = 0.f;
 	float realDeltaTime = 0.f;
+	sf::Text		frameText;
+	unsigned int	currentFrame;
+	float			currentFrameTime;
 
 public:
 	float GetTime() const { return time; }
@@ -29,6 +32,8 @@ public:
 
 	void SetTimeScale(float newTimeScale) { timeScale = newTimeScale; }
 	float GetTimeScale() const { return timeScale; }
+
+	void FrameCheck();
 
 	sf::RenderWindow& GetWindow() { return window; }
 	

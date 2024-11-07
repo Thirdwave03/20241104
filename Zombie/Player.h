@@ -33,12 +33,13 @@ protected:
 	int bulletCnt = 0;
 	int clipSize = 0;
 	int spareBullet = 0;
+	int tobeReloadedBulletCnt = 0;
 
 	int score = 0;
 
 	int zombieCount = 0;
 
-	int wave = 0;
+	int wave = 1;
 	int spawnCnt = 0;
 
 	int hpPickupMtp = 0;
@@ -97,6 +98,9 @@ public:
 	int GetShootReloadDelay();
 	void SetShootReloadDelay(int delay);
 
+	int GetPlayerDamage();
+	void SetPlayerDamage(int damage);
+
 	float GetSpeed();
 	void SetSpeed(float speed);
 
@@ -112,4 +116,10 @@ public:
 	void Reload();
 
 	void Shoot();
+	bool GetReloadingStatus();
+
+	void AddItemSpawnSpeed(int spawnspeed);
+	void ResetItemSpawnSpeed();
+
+	void StageClearReset();
 };

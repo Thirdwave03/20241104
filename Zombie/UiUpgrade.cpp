@@ -70,7 +70,7 @@ void UiUpgrade::Reset()
 
 void UiUpgrade::Update(float dt)
 {
-
+	clickBlockTimer -= dt;
 }
 
 void UiUpgrade::FixedUpdate(float dt)
@@ -93,7 +93,7 @@ void UiUpgrade::FixedUpdate(float dt)
 			mouseLocated[i] = false;
 		}
 	}
-	if (InputMgr::GetMouseButtonDown(sf::Mouse::Left))
+	if (InputMgr::GetMouseButtonDown(sf::Mouse::Left) && clickBlockTimer<0.f)
 	{
 		for (int i = 0; i < noOfUpgrades; i++)
 		{
@@ -117,11 +117,17 @@ void UiUpgrade::Draw(sf::RenderWindow& window)
 void UiUpgrade::SetUpgradeText()
 {
 	textUpgrades[0].setString("1.INCREASED FIRE RATE");
-	textUpgrades[1].setString("2.INCREASED CLIP SIZE"); // ÅºÃ¢»çÀÌÁî
-	textUpgrades[2].setString("3.INCREASED MAX HEALTH");
-	textUpgrades[3].setString("4.MORE AND BETTER HEALTH PICKUPS");
-	textUpgrades[4].setString("5.MORE AND BETTER AMMO PICKUPS");
-	textUpgrades[5].setString("6.INCREASED RUN SPEED");
+	textUpgrades[1].setString("2.INCREASED Damage");
+	textUpgrades[2].setString("3.INCREASED CLIP SIZE"); // ÅºÃ¢»çÀÌÁî
+	textUpgrades[3].setString("4.INCREASED MAX HEALTH");
+	textUpgrades[4].setString("5.MORE AND BETTER HEALTH PICKUPS");
+	textUpgrades[5].setString("6.MORE AND BETTER AMMO PICKUPS");
+	textUpgrades[6].setString("7.INCREASED RUN SPEED");
+}
+
+void UiUpgrade::SetClickBlocker(float timer)
+{
+	clickBlockTimer = timer;
 }
 
 void UiUpgrade::SetUpgrade(UpgradeTypes ugType)
@@ -130,23 +136,29 @@ void UiUpgrade::SetUpgrade(UpgradeTypes ugType)
 	switch (ugTypes)
 	{
 	case UpgradeTypes::FireRate:
-		player->SetShootReloadDelay(player->GetShootReloadDelay()+20);
+		player->SetShootReloadDelay(player->GetShootReloadDelay()+30);
+		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
+		break;
+	case UpgradeTypes::Damage:
+		player->SetPlayerDamage(player->GetPlayerDamage() + 10);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::ClipSize:
-		player->SetClipSize(player->GetClipSize() + 1);
+		player->SetClipSize(player->GetClipSize() + 3);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::MaxHp:
-		player->SetPlayerMaxHp(player->GetPlayerMaxHp() + 20);
+		player->SetPlayerMaxHp(player->GetPlayerMaxHp() + 25);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::HpPickup:
-		player->SetHpPickupMultiplier(player->GetHpPickupMultiplier() + 1);
+		player->SetHpPickupMultiplier(player->GetHpPickupMultiplier() + 2);
+		player->AddItemSpawnSpeed(25);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::AmmoPickup:
-		player->SetBulletPickupMultiplier(player->GetBulletPickupMultiplier() + 1);
+		player->SetBulletPickupMultiplier(player->GetBulletPickupMultiplier() + 2);
+		player->AddItemSpawnSpeed(25);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::Speed:

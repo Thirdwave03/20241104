@@ -9,6 +9,7 @@ class UiUpgrade :
 	enum class UpgradeTypes
 	{
 		FireRate,
+		Damage,
 		ClipSize,
 		MaxHp,
 		HpPickup,
@@ -17,7 +18,7 @@ class UiUpgrade :
 	};
 
 protected:
-	static const int noOfUpgrades = 6;
+	static const int noOfUpgrades = 7;
 
 	UpgradeTypes ugTypes = UpgradeTypes::FireRate;
 	
@@ -25,6 +26,8 @@ protected:
 	sf::Sprite background;
 
 	Player* player;
+
+	float clickBlockTimer = 0.5f;
 
 	bool mouseLocated[noOfUpgrades] = { false };
 
@@ -47,6 +50,8 @@ public:
 	void Draw(sf::RenderWindow& window) override;
 
 	void SetUpgradeText();
+
+	void SetClickBlocker(float timer);
 
 	void SetUpgrade(UpgradeTypes ugType);
 };

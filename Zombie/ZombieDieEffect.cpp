@@ -16,11 +16,12 @@ void ZombieDieEffect::Update(float dt)
 	{
 		SetActive(false);
 	}
-	if (timer < 5);
-	{
-		fadeoutTimer = timer;
-	}
 
 	sf::Uint8 alpha = (int)(255 - 255 * (10-timer) / 10);
 	sprite.setColor({ sprite.getColor().r, sprite.getColor().g, sprite.getColor().b, alpha });
+}
+
+void ZombieDieEffect::SetTimer()
+{
+	timer = 10.f;
 }

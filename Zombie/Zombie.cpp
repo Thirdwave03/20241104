@@ -73,8 +73,8 @@ void Zombie::Release()
 
 void Zombie::Reset()
 {
-	sceneGame = (SceneGame*)(SCENE_MGR.GetCurrentScene());
 	player = dynamic_cast<Player*>(SCENE_MGR.GetCurrentScene()->FindGo("Player"));
+	sceneGame = (SceneGame*)(SCENE_MGR.GetCurrentScene());
 
 	body.setTexture(TEXTURE_MGR.Get(textureId));
 	SetOrigin(Origins::MC);
@@ -136,35 +136,35 @@ void Zombie::SetType(Types type)
 	case Types::Bloater:
 		textureId = "graphics/bloater.png";
 		name = "Bloater";
-		maxHp = 50;
+		maxHp = 60 * statMultiplier;
 		hp = maxHp;
 		attackInterval = 4.f;
-		damage = 10;
-		speed = 75.f;
+		damage = 10 * statMultiplier;
+		speed = 40.f * statMultiplier;
 		actionRecoveryTime = 3.f;
-		score = 500;
+		score = 500 * statMultiplier;
 		break;
 	case Types::Chaser:
 		textureId = "graphics/chaser.png";
 		name = "Chaser";
-		maxHp = 20;
+		maxHp = 20 * statMultiplier;
 		hp = maxHp;
 		attackInterval = 2.f;
-		damage = 2;
-		speed = 100.f;
+		damage = 3 * statMultiplier;
+		speed = 150.f * statMultiplier;
 		actionRecoveryTime = 1.f;
-		score = 200;
+		score = 200 * statMultiplier;
 		break;
 	case Types::Crawler:
 		textureId = "graphics/crawler.png";
 		name = "Crawler";
-		maxHp = 30;
+		maxHp = 40 * statMultiplier;
 		hp = maxHp;
 		attackInterval = 3.f;
-		damage = 5;
-		speed = 40.f;
+		damage = 5 * statMultiplier;
+		speed = 90.f * statMultiplier;
 		actionRecoveryTime = 2.f;
-		score = 200;
+		score = 300 * statMultiplier;
 		break;
 	}
 	body.setTexture(TEXTURE_MGR.Get(textureId), true); // true 왜넣는다고?
@@ -195,11 +195,27 @@ int Zombie::GetZombieHp()
 
 void Zombie::OnDamage(int dmg_in)
 {
+	//bool ifCrit=false;
+	//int actualDmg = dmg_in;
+	//sf::Color color_in = sf::Color::Red;
+	//if (Utils::RandomRange(0, 9) != 9)
+	//{
+	//	ifCrit = true;
+	//	actualDmg *= 2;
+	//	color_in = sf::Color::Yellow;
+	//}
+
 	hp -= dmg_in;
 	debugHitTimer = 0.15f;
+	sceneGame->SetIndicator(dmg_in, body);
 	if (hp <= 0 && sceneGame!=nullptr)
 	{
 		player->SetScore(player->GetScore() + score);
 		sceneGame->OnZombieDie(this);
 	}
+}
+
+void Zombie::SetStatMultiplier(int wave)
+{
+	statMultiplier = (float)(9 + wave) / 10;
 }

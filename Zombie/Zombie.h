@@ -2,6 +2,7 @@
 
 class Player;
 class SceneGame;
+class Indicator;
 
 class Zombie : public GameObject
 {
@@ -12,6 +13,9 @@ public:
 		Chaser,
 		Crawler,
 	};
+	//	EliteBloater,
+	//	EliteChaser,
+	//	EliteCrawler,
 
 	static const int TotalTypes = 3;
 
@@ -41,6 +45,8 @@ protected:
 
 	Player* player = nullptr;
 	SceneGame* sceneGame = nullptr;
+
+	float statMultiplier = 1.f;
 
 public:
 	Zombie(const std::string& name = "");
@@ -73,4 +79,6 @@ public:
 	int GetZombieHp();
 
 	void OnDamage(int dmg_in);
+
+	void SetStatMultiplier(int wave);
 };

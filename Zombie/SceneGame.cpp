@@ -6,11 +6,12 @@
 #include "Item.h"
 #include "TileMap.h"
 #include "DebugBox.h"
-#include "UserInterface.h"
 #include "UiHud.h"
 #include "UiUpgrade.h"
 #include "UiGameOver.h"
+#include "UiNotification.h"
 #include "ZombieDieEffect.h"
+#include "Indicator.h"
 
 SceneGame::SceneGame()
 	:Scene(SceneIds::Game)
@@ -28,6 +29,8 @@ void SceneGame::Init()
 	uiUpgrade->SetActive(false);
 	uiGameOver = AddGo(new UiGameOver("UiGameOver"));
 	uiGameOver->SetActive(false);
+	uiNotification = AddGo(new UiNotification("UiNotification"));
+	uiNotification->SetActive(false);
 
 	Scene::Init();
 }
@@ -93,6 +96,13 @@ void SceneGame::Exit()
 	}
 	zombieDieEffects.clear();
 
+	for (auto indicator : indicators)
+	{
+		RemoveGo(indicator);
+		indicatorPool.Return(indicator);
+	}
+	indicators.clear();
+
 	FONT_MGR.Unload("fonts/DS-DIGI.ttf");
 
 	Scene::Exit();
@@ -112,12 +122,14 @@ void SceneGame::Update(float dt)
 		FRAMEWORK.SetTimeScale(0.f);
 		if (InputMgr::GetKeyDown(sf::Keyboard::Enter))
 		{
+			player->ResetItemSpawnSpeed();
 			uiGameOver->SetActive(false);
 			SCENE_MGR.ChangeScene(SceneIds::Game);
 		}
 	}
 	if (isUpgrading)
 	{
+		uiUpgrade->Update(FRAMEWORK.GetRealDeltaTime());
 		return;
 	}
 	uiUpgrade->SetActive(false);
@@ -171,7 +183,7 @@ void SceneGame::Update(float dt)
 			skipPreventer = true;
 		}
 	}
-	if (itemSpawnTimer > itemSpawnDuration)
+	if (itemSpawnTimer > itemSpawnDuration && items.size() < 4)
 	{
 		itemSpawnTimer -= itemSpawnDuration;
 		SpawnItem(1);
@@ -203,7 +215,9 @@ void SceneGame::Update(float dt)
 	{
 		if (!skipPreventer)
 		{
+			player->StageClearReset();
 			isUpgrading = true;
+			uiUpgrade->SetClickBlocker(0.5);
 			uiUpgrade->SetActive(true);
 			FRAMEWORK.SetTimeScale(0.f);
 		}
@@ -226,13 +240,14 @@ void SceneGame::SpawnZombies(int count)
 		Zombie* zombie = zombiePool.Take();
 		zombies.push_back(zombie);
 
-		Zombie::Types zombieType = (Zombie::Types)Utils::RandomRange(0, Zombie::TotalTypes -1);
+		zombie->SetStatMultiplier(player->GetWave());
+		Zombie::Types zombieType = (Zombie::Types)Utils::RandomRange(0, Zombie::TotalTypes - 1);
 		zombie->SetType(zombieType);
 
 		sf::Vector2f pos;
-		pos.x = Utils::RandomRange(tileMap->GetGlobalBounds().left, 
-			tileMap->GetGlobalBounds().left +tileMap->GetGlobalBounds().width);
-		pos.y = Utils::RandomRange(tileMap->GetGlobalBounds().top, 
+		pos.x = Utils::RandomRange(tileMap->GetGlobalBounds().left,
+			tileMap->GetGlobalBounds().left + tileMap->GetGlobalBounds().width);
+		pos.y = Utils::RandomRange(tileMap->GetGlobalBounds().top,
 			tileMap->GetGlobalBounds().top + tileMap->GetGlobalBounds().height);
 		zombie->SetPosition(pos);
 
@@ -247,7 +262,7 @@ void SceneGame::SpawnItem(int count)
 		Item* item = itemPool.Take();
 		items.push_back(item);
 
-		Item::ItemTypes itemType = (Item::ItemTypes)Utils::RandomRange(0, Item::TotalItemTypes -1);
+		Item::ItemTypes itemType = (Item::ItemTypes)Utils::RandomRange(0, Item::TotalItemTypes - 1);
 		item->SetType(itemType);
 
 		sf::Vector2f pos;
@@ -281,6 +296,7 @@ void SceneGame::OnZombieDie(Zombie* zombie)
 	SOUND_MGR.PlaySfx("sound/splat.wav");
 	ZombieDieEffect* dieEffect = zombieDieEffectPool.Take();
 	AddGo(dieEffect);
+	dieEffect->SetTimer();
 	dieEffect->SetOrigin(Origins::MC);
 	dieEffect->SetPosition(zombie->GetPosition());
 	zombieDieEffects.push_back(dieEffect);
@@ -318,5 +334,54 @@ void SceneGame::SetUpgrading(bool isUpgrading)
 		player->SetWave(player->GetWave() + 1);
 		player->SetSpawnCnt(player->GetWave());
 		FRAMEWORK.SetTimeScale(1.f);
+		uiNotification->SetActive(false);
+		auto it = items.begin();
+		while (it != items.end())
+		{
+			RemoveGo(*it);
+			itemPool.Return(*it);
+			it = items.erase(it);
+		}
 	}
+}
+
+void SceneGame::CallUiNoBullet()
+{
+	uiNotification->SetActive(true);
+	uiNotification->IndicaterNoBullet();
+}
+
+void SceneGame::CallUiReloading()
+{
+	uiNotification->SetActive(true);
+	uiNotification->IndicaterReloading();
+}
+
+void SceneGame::CallUiNoSpare()
+{
+	uiNotification->SetActive(true);
+	uiNotification->IndicaterNoSpareBullet();
+}
+
+void SceneGame::SetUiNotificationActive(bool active)
+{
+	uiNotification->SetActive(false);
+}
+
+void SceneGame::SetItemSpawnSpeed(int spawnSpeed)
+{
+	itemSpawnSpeed = spawnSpeed;
+}
+
+int SceneGame::GetItemSpawnSpeed()
+{
+	return itemSpawnSpeed;
+}
+
+void SceneGame::SetIndicator(int info, sf::Sprite sprite, sf::Color color)
+{
+	Indicator* indicator = indicatorPool.Take();
+	AddGo(indicator);
+	indicator->SetIndicator(info, sprite, color);
+	indicators.push_back(indicator);
 }

@@ -69,15 +69,15 @@ void Player::Release()
 
 void Player::Reset()
 {
-	playerMaxHp = 100;
-	playerHp = 100;
+	playerMaxHp = 50;
+	playerHp = 50;
 	speedShootReload = 100;
 	playerDamage = 20;
 	bulletCnt = 6;
 	clipSize = 6;
 	score = 0;
 	speed = 150;
-	spareBullet = 12;
+	spareBullet = 6;
 	hpPickupMtp = 2;
 	bulletPickupMtp = 3;
 	wave = 1;
@@ -112,6 +112,7 @@ void Player::Update(float dt)
 		reloadTimer = 10.f;
 		Reload();
 		SOUND_MGR.PlaySfx("sound/reload.wav");
+		sceneGame->SetUiNotificationActive(false);
 	}
 
 	if (dirMagnitude > 1.f)
@@ -145,7 +146,10 @@ void Player::Update(float dt)
 		SetPosition({ GetPosition().x, movableBounds.top + movableBounds.height});
 	}
 	SetRotation(Utils::Angle(look));
-	SetPosition(position + direction * speed * dt);
+	float reloadDebuff = 1.f;
+	if (isReloading)
+		reloadDebuff = 0.6;
+	SetPosition(position + direction * speed * dt * reloadDebuff);
 
 	Utils::Clamp(bulletCnt, 0, 50);
 	shootTimer += dt * speedShootReload / 100;
@@ -316,6 +320,16 @@ void Player::SetShootReloadDelay(int delay)
 	speedShootReload = delay;
 }
 
+int Player::GetPlayerDamage()
+{
+	return playerDamage;
+}
+
+void Player::SetPlayerDamage(int damage)
+{
+	playerDamage = damage;
+}
+
 float Player::GetSpeed()
 {
 	return speed;
@@ -358,27 +372,38 @@ void Player::TurnDebugBox(bool active, sf::Color color)
 
 void Player::CallReload()
 {
-	if(!isReloading)
-		SOUND_MGR.PlaySfx("sound/reload_failed.wav");
-	if (!(bulletCnt == clipSize) && spareBullet != 0)
+	if (!(bulletCnt == clipSize))
 	{
-		isReloading = true;
-		reloadTimer = reloadSpeed;
+		if (spareBullet != 0)
+		{
+			if (spareBullet < clipSize)
+			{
+				tobeReloadedBulletCnt = spareBullet;
+			}
+			else
+			{
+				tobeReloadedBulletCnt = clipSize;
+			}
+
+			tobeReloadedBulletCnt = Utils::Clamp(tobeReloadedBulletCnt, 1, clipSize - bulletCnt);
+			if (!isReloading)
+			{
+				SOUND_MGR.PlaySfx("sound/reload_failed.wav");
+				reloadTimer = reloadSpeed;
+			}
+			isReloading = true;
+			sceneGame->CallUiReloading();
+			return;
+		}
+		sceneGame->CallUiNoSpare();
 	}
 }
 
 void Player::Reload()
 {
-	if (clipSize - bulletCnt <= spareBullet)
-	{
-		spareBullet -= (clipSize - bulletCnt);
-		bulletCnt = clipSize;
-	}
-	else
-	{
-		bulletCnt += spareBullet;
-		spareBullet = 0;
-	}
+	bulletCnt += tobeReloadedBulletCnt;
+	spareBullet -= tobeReloadedBulletCnt;
+
 	isReloading = false;
 }
 
@@ -387,10 +412,37 @@ void Player::Shoot()
 	if (bulletCnt > 0)
 	{
 		if (isReloading)
+		{
 			return;
+		}
 		SOUND_MGR.PlaySfx("sound/shoot.wav");
 		Bullet* bullet = sceneGame->TakeBullet();
 		bullet->Fire(position, look, bulletSpeed, playerDamage);
 		bulletCnt--;
+		return;
 	}
+	if(!isReloading)
+	sceneGame->CallUiNoBullet();
+}
+
+bool Player::GetReloadingStatus()
+{
+	return isReloading;
+}
+
+void Player::AddItemSpawnSpeed(int spawnspeed)
+{
+	sceneGame->SetItemSpawnSpeed(sceneGame->GetItemSpawnSpeed()+spawnspeed);
+}
+
+void Player::ResetItemSpawnSpeed()
+{
+	sceneGame->SetItemSpawnSpeed(100);
+}
+
+void Player::StageClearReset()
+{
+	playerHp = playerMaxHp;
+	bulletCnt = clipSize;
+	spareBullet = clipSize;
 }
