@@ -81,9 +81,17 @@ void UiUpgrade::FixedUpdate(float dt)
 	for (int i = 0; i < noOfUpgrades; i++)
 	{
 		if (textUpgrades[i].getGlobalBounds().contains(mPos))
+		{
 			textUpgrades[i].setFillColor(sf::Color::Red);
+			if(!mouseLocated[i])
+				SOUND_MGR.PlaySfx("sound/mouseover1.wav");
+			mouseLocated[i] = true;
+		}
 		else
+		{
 			textUpgrades[i].setFillColor(sf::Color::White);
+			mouseLocated[i] = false;
+		}
 	}
 	if (InputMgr::GetMouseButtonDown(sf::Mouse::Left))
 	{
@@ -123,27 +131,27 @@ void UiUpgrade::SetUpgrade(UpgradeTypes ugType)
 	{
 	case UpgradeTypes::FireRate:
 		player->SetShootReloadDelay(player->GetShootReloadDelay()+20);
-		SOUND_MGR.PlaySfx("sound/powerup.wav");
+		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::ClipSize:
 		player->SetClipSize(player->GetClipSize() + 1);
-		SOUND_MGR.PlaySfx("sound/powerup.wav");
+		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::MaxHp:
 		player->SetPlayerMaxHp(player->GetPlayerMaxHp() + 20);
-		SOUND_MGR.PlaySfx("sound/powerup.wav");
+		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::HpPickup:
 		player->SetHpPickupMultiplier(player->GetHpPickupMultiplier() + 1);
-		SOUND_MGR.PlaySfx("sound/powerup.wav");
+		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::AmmoPickup:
 		player->SetBulletPickupMultiplier(player->GetBulletPickupMultiplier() + 1);
-		SOUND_MGR.PlaySfx("sound/powerup.wav");
+		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::Speed:
 		player->SetSpeed(player->GetSpeed() + 50);
-		SOUND_MGR.PlaySfx("sound/powerup.wav");
+		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	}
 	dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene())->SetUpgrading(false);

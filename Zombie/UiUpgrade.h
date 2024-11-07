@@ -26,6 +26,8 @@ protected:
 
 	Player* player;
 
+	bool mouseLocated[noOfUpgrades] = { false };
+
 public:
 	UiUpgrade(const std::string& name = "");
 	~UiUpgrade() = default;

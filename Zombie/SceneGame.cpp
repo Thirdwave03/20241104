@@ -43,7 +43,7 @@ void SceneGame::Enter()
 	FRAMEWORK.SetTimeScale(1.f);
 	SOUND_MGR.StopBgm();
 	SOUND_MGR.PlayBgm("sound/deadByDaylight.mp3");
-	SOUND_MGR.SetBgmVolume(80.f);
+	SOUND_MGR.SetBgmVolume(50.f);
 
 	FRAMEWORK.GetWindow().setMouseCursorVisible(false);
 	cursor.setTexture(TEXTURE_MGR.Get("graphics/crosshair.png"));
