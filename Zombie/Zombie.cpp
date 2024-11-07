@@ -195,15 +195,15 @@ int Zombie::GetZombieHp()
 
 void Zombie::OnDamage(int dmg_in)
 {
-	//bool ifCrit=false;
-	//int actualDmg = dmg_in;
-	//sf::Color color_in = sf::Color::Red;
-	//if (Utils::RandomRange(0, 9) != 9)
-	//{
-	//	ifCrit = true;
-	//	actualDmg *= 2;
-	//	color_in = sf::Color::Yellow;
-	//}
+	bool ifCrit=false;
+	int actualDmg = dmg_in;
+	sf::Color color_in = sf::Color::Red;
+	if (Utils::RandomRange(0, 9) != 9)
+	{
+		ifCrit = true;
+		actualDmg *= 2;
+		color_in = sf::Color::Yellow;
+	}
 
 	hp -= dmg_in;
 	debugHitTimer = 0.15f;

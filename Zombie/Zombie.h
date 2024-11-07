@@ -13,9 +13,6 @@ public:
 		Chaser,
 		Crawler,
 	};
-	//	EliteBloater,
-	//	EliteChaser,
-	//	EliteCrawler,
 
 	static const int TotalTypes = 3;
 

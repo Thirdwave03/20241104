@@ -28,6 +28,7 @@ struct AxisInfo
 class InputMgr
 {
 private:
+	
 	static std::list<int> downKeys;
 	static std::list<int> heldKeys;
 	static std::list<int> upKeys;

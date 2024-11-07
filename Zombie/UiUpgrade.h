@@ -18,7 +18,9 @@ class UiUpgrade :
 	};
 
 protected:
-	static const int noOfUpgrades = 7;
+	
+	
+	const static int noOfUpgrades = 7;
 
 	UpgradeTypes ugTypes = UpgradeTypes::FireRate;
 	
