@@ -130,6 +130,7 @@ void Bullet::Fire(const sf::Vector2f& initPos, const sf::Vector2f& dir, float s,
 	direction = dir;
 	speed = s;
 	damage = d;
+	activeDuration = 4.f;
 
 	SetRotation(Utils::Angle(direction));
 }

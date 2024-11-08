@@ -142,6 +142,7 @@ void Zombie::SetType(Types type)
 		damage = 10 * statMultiplier;
 		speed = 40.f * statMultiplier;
 		actionRecoveryTime = 3.f;
+		actionRecoveryTimer = 0.f;
 		score = 500 * statMultiplier;
 		break;
 	case Types::Chaser:
@@ -153,6 +154,7 @@ void Zombie::SetType(Types type)
 		damage = 3 * statMultiplier;
 		speed = 150.f * statMultiplier;
 		actionRecoveryTime = 1.f;
+		actionRecoveryTimer = 0.f;
 		score = 200 * statMultiplier;
 		break;
 	case Types::Crawler:
@@ -164,10 +166,52 @@ void Zombie::SetType(Types type)
 		damage = 5 * statMultiplier;
 		speed = 90.f * statMultiplier;
 		actionRecoveryTime = 2.f;
+		actionRecoveryTimer = 0.f;
 		score = 300 * statMultiplier;
+		break;
+	case Types::EliteBloater: // 체력4배, 공격력 1.5배 스피드 1.5배 스코어 10배
+		textureId = "graphics/bloater.png";
+		name = "EliteBloater";
+		maxHp = 240 * statMultiplier;
+		hp = maxHp;
+		attackInterval = 4.f;
+		damage = 15 * statMultiplier;
+		speed = 60.f * statMultiplier;
+		actionRecoveryTime = 4.f;
+		actionRecoveryTimer = 0.f;
+		score = 3000 * statMultiplier;
+		break;
+	case Types::EliteChaser: // 체력 4배, 공격력 2배 스피드 1.2배 스코어 10배
+		textureId = "graphics/chaser.png";
+		name = "EliteChaser";
+		maxHp = 80 * statMultiplier;
+		hp = maxHp;
+		attackInterval = 2.f;
+		damage = 6 * statMultiplier;
+		speed = 180.f * statMultiplier;
+		actionRecoveryTime = 2.f;
+		actionRecoveryTimer = 0.f;
+		score = 2000 * statMultiplier;
+		break;
+	case Types::EliteCrawler: // 체력 4배, 공격력 2배 스피드 1.33배 스코어 10배
+		textureId = "graphics/crawler.png";
+		name = "EliteCrawler";
+		maxHp = 160 * statMultiplier;
+		hp = maxHp;
+		attackInterval = 3.f;
+		damage = 10 * statMultiplier;
+		speed = 120.f * statMultiplier;
+		actionRecoveryTime = 3.f;
+		actionRecoveryTimer = 0.f;
+		score = 3000 * statMultiplier;
 		break;
 	}
 	body.setTexture(TEXTURE_MGR.Get(textureId), true); // true 왜넣는다고?
+	if ((int)type > 2)
+	{
+		body.setColor(sf::Color::Red);
+		body.setScale(2.f, 2.f);
+	}
 }
 
 int Zombie::Attack()
@@ -195,19 +239,18 @@ int Zombie::GetZombieHp()
 
 void Zombie::OnDamage(int dmg_in)
 {
-	bool ifCrit=false;
 	int actualDmg = dmg_in;
 	sf::Color color_in = sf::Color::Red;
-	if (Utils::RandomRange(0, 9) != 9)
+	if (Utils::RandomRange(0, 6) == 6)
 	{
-		ifCrit = true;
 		actualDmg *= 2;
+		actualDmg + Utils::RandomRange(-2, 1);
 		color_in = sf::Color::Yellow;
 	}
 
-	hp -= dmg_in;
+	hp -= actualDmg;
 	debugHitTimer = 0.15f;
-	sceneGame->SetIndicator(dmg_in, body);
+	sceneGame->SetIndicator(actualDmg, body, color_in);
 	if (hp <= 0 && sceneGame!=nullptr)
 	{
 		player->SetScore(player->GetScore() + score);

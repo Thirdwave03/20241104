@@ -48,7 +48,7 @@ protected:
 	int itemSpawnSpeed = 100.f;
 
 	float zombieSpawnTimer = 0.f;
-	float zombieSpawnDuration = 7.f;
+	float zombieSpawnDuration = 9.f;
 
 	bool isDead = false;
 	bool isUpgrading = false;
@@ -71,6 +71,7 @@ public:
 	//void CollisionCheck();
 
 	void SpawnZombies(int count);
+	void SpawnEliteZombies(int count);
 	void SpawnItem(int count);
 
 	Bullet* TakeBullet();

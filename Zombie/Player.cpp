@@ -151,7 +151,7 @@ void Player::Update(float dt)
 		reloadDebuff = 0.6;
 	SetPosition(position + direction * speed * dt * reloadDebuff);
 
-	Utils::Clamp(bulletCnt, 0, 50);
+	Utils::Clamp(bulletCnt, 0, clipSize*6);
 	shootTimer += dt * speedShootReload / 100;
 
 	if (shootTimer > shootDelay && InputMgr::GetMouseButtonDown(sf::Mouse::Left))
@@ -417,6 +417,7 @@ void Player::Shoot()
 		}
 		SOUND_MGR.PlaySfx("sound/shoot.wav");
 		Bullet* bullet = sceneGame->TakeBullet();
+		bullet->SetActive(true);
 		bullet->Fire(position, look, bulletSpeed, playerDamage);
 		bulletCnt--;
 		return;

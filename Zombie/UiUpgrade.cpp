@@ -136,7 +136,7 @@ void UiUpgrade::SetUpgrade(UpgradeTypes ugType)
 	switch (ugTypes)
 	{
 	case UpgradeTypes::FireRate:
-		player->SetShootReloadDelay(player->GetShootReloadDelay()+30);
+		player->SetShootReloadDelay(player->GetShootReloadDelay()+40);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::Damage:

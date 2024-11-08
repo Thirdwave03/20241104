@@ -12,9 +12,12 @@ public:
 		Bloater,
 		Chaser,
 		Crawler,
+		EliteBloater,
+		EliteChaser,
+		EliteCrawler,
 	};
 
-	static const int TotalTypes = 3;
+	static const int TotalTypes = 6;
 
 protected:
 	Types types = Types::Bloater;
@@ -68,6 +71,7 @@ public:
 	void Draw(sf::RenderWindow& window) override;
 
 	void SetType(Types type);
+	Types GetType() { return types; }
 
 	int Attack();
 

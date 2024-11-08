@@ -52,6 +52,8 @@ void Indicator::SetIndicator(int info, sf::Sprite sp, sf::Color color)
 	body.setFont(FONT_MGR.Get("fonts/zombiecontrol.ttf"));
 	body.setCharacterSize(30.f);
 	body.setFillColor(color);
+	if (color == sf::Color::Yellow)
+		body.setCharacterSize(45.f);
 	string = std::to_string(info);
 	body.setString(string);
 	Utils::SetOrigin(body, Origins::MC);

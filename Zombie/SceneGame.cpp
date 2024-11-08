@@ -152,6 +152,10 @@ void SceneGame::Update(float dt)
 	{
 		SpawnItem(1);
 	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::Num3))
+	{
+		SpawnEliteZombies(1);
+	}
 	if (InputMgr::GetKeyDown(sf::Keyboard::Num9))
 	{
 		this->TurnDebugBox(true);
@@ -180,6 +184,8 @@ void SceneGame::Update(float dt)
 		{
 			SpawnZombies(5);
 			player->SetSpawnCnt(player->GetSpawnCnt() - 1);
+			if (player->GetWave() > 5 && player->GetSpawnCnt() == 0)
+				SpawnEliteZombies(1);
 			skipPreventer = true;
 		}
 	}
@@ -241,7 +247,29 @@ void SceneGame::SpawnZombies(int count)
 		zombies.push_back(zombie);
 
 		zombie->SetStatMultiplier(player->GetWave());
-		Zombie::Types zombieType = (Zombie::Types)Utils::RandomRange(0, Zombie::TotalTypes - 1);
+		Zombie::Types zombieType = (Zombie::Types)Utils::RandomRange(0, 2);
+		zombie->SetType(zombieType);
+
+		sf::Vector2f pos;
+		pos.x = Utils::RandomRange(tileMap->GetGlobalBounds().left,
+			tileMap->GetGlobalBounds().left + tileMap->GetGlobalBounds().width);
+		pos.y = Utils::RandomRange(tileMap->GetGlobalBounds().top,
+			tileMap->GetGlobalBounds().top + tileMap->GetGlobalBounds().height);
+		zombie->SetPosition(pos);
+
+		AddGo(zombie);
+	}
+}
+
+void SceneGame::SpawnEliteZombies(int count)
+{
+	for (int i = 0; i < count; i++)
+	{
+		Zombie* zombie = zombiePool.Take();
+		zombies.push_back(zombie);
+
+		zombie->SetStatMultiplier(player->GetWave());
+		Zombie::Types zombieType = (Zombie::Types)Utils::RandomRange(3, 5);
 		zombie->SetType(zombieType);
 
 		sf::Vector2f pos;
@@ -302,6 +330,10 @@ void SceneGame::OnZombieDie(Zombie* zombie)
 	zombieDieEffects.push_back(dieEffect);
 	if (zombie->GetName() == "Bloater")
 		dieEffect->SetScale({ 1.6f,1.6f });
+	if ((int)zombie->GetType() > 3)
+		dieEffect->SetScale({ 2.f,2.f });
+	if ((int)zombie->GetType() == 3)
+		dieEffect->SetScale({ 3.2f, 3.2f });
 	RemoveGo(zombie);
 	zombiePool.Return(zombie);
 	zombies.remove(zombie);
