@@ -81,6 +81,8 @@ void Zombie::Reset()
 	SetPosition({ 0.f,0.f });
 	SetRotation(0.f);
 	SetScale({ 1.f,1.f });
+
+	movableBounds = player->GetMovableBounds();
 }
 
 void Zombie::Update(float dt)
@@ -121,11 +123,56 @@ void Zombie::Update(float dt)
 	}
 }
 
+void Zombie::FixedUpdate(float dt)
+{
+	std::list<Zombie*> zombieList = sceneGame->GetZombieList();
+
+	for (auto zombie : zombieList)
+	{
+		if (zombie != this)
+		{
+			if (Utils::Distance(this->GetPosition(), zombie->GetPosition()) < 30.f)
+			{
+				sf::Vector2f pushDir = Utils::GetNormal(this->GetPosition() - zombie->GetPosition());
+
+				SetPosition(GetPosition() + pushDir * speed * dt);
+			}
+		}
+	}
+	movableBounds = player->GetMovableBounds();
+	RepositionInBounds();
+}
+
 void Zombie::Draw(sf::RenderWindow& window)
 {
 	window.draw(body);
 	if (debugBox.IsVisible())
 		debugBox.Draw(window);
+}
+
+sf::FloatRect Zombie::GetMovableBounds()
+{
+	return movableBounds;
+}
+
+void Zombie::RepositionInBounds()
+{
+	if (GetPosition().x < movableBounds.left)
+	{
+		SetPosition({ movableBounds.left,GetPosition().y });
+	}
+	if (GetPosition().x > movableBounds.left + movableBounds.width)
+	{
+		SetPosition({ movableBounds.left + movableBounds.width,GetPosition().y });
+	}
+	if (GetPosition().y < movableBounds.top)
+	{
+		SetPosition({ GetPosition().x, movableBounds.top });
+	}
+	if (GetPosition().y > movableBounds.top + movableBounds.height)
+	{
+		SetPosition({ GetPosition().x, movableBounds.top + movableBounds.height });
+	}
 }
 
 void Zombie::SetType(Types type)
@@ -139,8 +186,10 @@ void Zombie::SetType(Types type)
 		maxHp = 60 * statMultiplier;
 		hp = maxHp;
 		attackInterval = 4.f;
+		attackTimer = 0.f;
 		damage = 10 * statMultiplier;
-		speed = 40.f * statMultiplier;
+		speed = 40.f * (1.f + (statMultiplier-1.f)/2);
+		speed = Utils::Clamp(speed, 0, 40.f * 2.f);
 		actionRecoveryTime = 3.f;
 		actionRecoveryTimer = 0.f;
 		score = 500 * statMultiplier;
@@ -151,8 +200,10 @@ void Zombie::SetType(Types type)
 		maxHp = 20 * statMultiplier;
 		hp = maxHp;
 		attackInterval = 2.f;
+		attackTimer = 0.f;
 		damage = 3 * statMultiplier;
-		speed = 150.f * statMultiplier;
+		speed = 150.f * (1.f + (statMultiplier - 1.f) / 2);
+		speed = Utils::Clamp(speed, 0, 150.f * 2.f);
 		actionRecoveryTime = 1.f;
 		actionRecoveryTimer = 0.f;
 		score = 200 * statMultiplier;
@@ -163,8 +214,10 @@ void Zombie::SetType(Types type)
 		maxHp = 40 * statMultiplier;
 		hp = maxHp;
 		attackInterval = 3.f;
+		attackTimer = 0.f;
 		damage = 5 * statMultiplier;
-		speed = 90.f * statMultiplier;
+		speed = 90.f * (1.f + (statMultiplier - 1.f) / 2);
+		speed = Utils::Clamp(speed, 0, 90.f * 2.f);
 		actionRecoveryTime = 2.f;
 		actionRecoveryTimer = 0.f;
 		score = 300 * statMultiplier;
@@ -175,8 +228,10 @@ void Zombie::SetType(Types type)
 		maxHp = 240 * statMultiplier;
 		hp = maxHp;
 		attackInterval = 4.f;
+		attackTimer = 0.f;
 		damage = 15 * statMultiplier;
-		speed = 60.f * statMultiplier;
+		speed = 60.f * (1.f + (statMultiplier - 1.f) / 2);
+		speed = Utils::Clamp(speed, 0, 60.f * 2.f);
 		actionRecoveryTime = 4.f;
 		actionRecoveryTimer = 0.f;
 		score = 3000 * statMultiplier;
@@ -187,8 +242,10 @@ void Zombie::SetType(Types type)
 		maxHp = 80 * statMultiplier;
 		hp = maxHp;
 		attackInterval = 2.f;
+		attackTimer = 0.f;
 		damage = 6 * statMultiplier;
-		speed = 180.f * statMultiplier;
+		speed = 180.f * (1.f + (statMultiplier - 1.f) / 2);
+		speed = Utils::Clamp(speed, 0, 180.f * 2.f);
 		actionRecoveryTime = 2.f;
 		actionRecoveryTimer = 0.f;
 		score = 2000 * statMultiplier;
@@ -199,8 +256,10 @@ void Zombie::SetType(Types type)
 		maxHp = 160 * statMultiplier;
 		hp = maxHp;
 		attackInterval = 3.f;
+		attackTimer = 0.f;
 		damage = 10 * statMultiplier;
-		speed = 120.f * statMultiplier;
+		speed = 120.f * (1.f + (statMultiplier - 1.f) / 2);
+		speed = Utils::Clamp(speed, 0, 120.f * 2.f);
 		actionRecoveryTime = 3.f;
 		actionRecoveryTimer = 0.f;
 		score = 3000 * statMultiplier;
@@ -211,6 +270,10 @@ void Zombie::SetType(Types type)
 	{
 		body.setColor(sf::Color::Red);
 		body.setScale(2.f, 2.f);
+	}
+	else
+	{
+		body.setColor(sf::Color::White);
 	}
 }
 

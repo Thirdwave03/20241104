@@ -10,7 +10,7 @@ protected:
 	sf::Transform transform;
 
 	sf::Vector2i cellCount; // 가로세로 타일 찍을 갯수
-	sf::Vector2f cellSize; // 각 타일당 사이즈
+	sf::Vector2f cellSize = { 50.f,50.f }; // 각 타일당 사이즈
 
 public:
 	TileMap(const std::string& name = "");
@@ -32,6 +32,8 @@ public:
 	void Update(float dt) override;
 	void Draw(sf::RenderWindow& window) override;
 
-	void Set(const sf::Vector2i count_in, const sf::Vector2f size_in);
+	sf::Vector2f GetCellSize() { return cellSize; }
+
+	void Set(const sf::Vector2i count_in, const sf::Vector2f size_in = {50.f,50.f});
 	void UpdateTransform(); // 변실 필요시
 };

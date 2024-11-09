@@ -33,6 +33,8 @@ protected:
 
 	bool mouseLocated[noOfUpgrades] = { false };
 
+	const int maxSpeedUpCnt = 12;
+
 public:
 	UiUpgrade(const std::string& name = "");
 	~UiUpgrade() = default;

@@ -45,15 +45,19 @@ protected:
 	ObjectPool<Indicator> indicatorPool;
 
 	float itemSpawnTimer = 0.f;
-	float itemSpawnDuration = 12.f;
+	float itemSpawnDuration = 12.f; // original = 12
 	int itemSpawnSpeed = 100.f;
 
 	float zombieSpawnTimer = 0.f;
-	float zombieSpawnDuration = 9.f;
+	float zombieSpawnDuration = 7.f;
+
+	int eliteZombieSpawnCnt = 15;
 
 	bool isDead = false;
 	bool isUpgrading = false;
 	bool skipPreventer = false;
+
+	int currentTileSize = 15*15;
 
 public:
 	SceneGame();
@@ -98,6 +102,12 @@ public:
 	void SetItemSpawnSpeed(int spawnSpeed);
 	int GetItemSpawnSpeed();
 
+	void ViewController(sf::RenderWindow& window);
+
 	void SetIndicator(int info, sf::Sprite sprite, sf::Color color = sf::Color::Red);
+
+	void ResizeTile();
+	int TileCntX();
+	int TileCntY();
 };
 

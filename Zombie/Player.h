@@ -55,10 +55,13 @@ protected:
 
 	bool powerOverwhelming = false;
 
+	int cheatMtp = 1;
+
 	SceneGame* sceneGame;
 	TileMap* tileMap;
 
 	sf::FloatRect movableBounds;
+
 public:
 	Player(const std::string& texId, const std::string& name_in = "");
 	~Player() = default;
@@ -79,6 +82,10 @@ public:
 	void Update(float dt) override;
 	void FixedUpdate(float dt) override;
 	void Draw(sf::RenderWindow& window) override;
+
+	void ResetMovableBounds();
+	sf::FloatRect GetMovableBounds();
+	void RepositionInBounds();
 
 	void SetPlayerHp(int Hp_in);
 	void ReducePlayerHp(int dmg_in);

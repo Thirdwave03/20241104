@@ -53,7 +53,7 @@ void UiUpgrade::Reset()
 	float textSize = 70.f;
 	sf::Font& font = FONT_MGR.Get("fonts/zombiecontrol.ttf");
 	background.setTexture(TEXTURE_MGR.Get("graphics/background.png"));
-	Utils::SetOrigin(background, Origins::MC);	
+	Utils::SetOrigin(background, Origins::MC);
 	auto wSize = FRAMEWORK.GetWindowSizeF();
 	background.setPosition(wSize.x / 2, wSize.y / 2);
 
@@ -81,7 +81,7 @@ void UiUpgrade::FixedUpdate(float dt)
 	
 	for (int i = 0; i < noOfUpgrades; i++)
 	{
-		if (player->GetUpgradeCnt(6) > 2 && i==6)
+		if (player->GetUpgradeCnt(6) > maxSpeedUpCnt && i==6)
 		{
 			textUpgrades[i].setFillColor(sf::Color(140,140,140));
 			textUpgrades[6].setString("7.INCREASED RUN SPEED (MAX)");
@@ -107,7 +107,7 @@ void UiUpgrade::FixedUpdate(float dt)
 	{
 		for (int i = 0; i < noOfUpgrades; i++)
 		{
-			if (player->GetUpgradeCnt(6) > 2 && i == 6)
+			if (player->GetUpgradeCnt(6) > maxSpeedUpCnt && i == 6)
 			{
 				textUpgrades[i].setFillColor(sf::Color(140, 140, 140));
 				break;
@@ -138,7 +138,7 @@ void UiUpgrade::SetUpgradeText()
 	textUpgrades[4].setString("5.MORE AND BETTER HEALTH PICKUPS");
 	textUpgrades[5].setString("6.MORE AND BETTER AMMO PICKUPS");
 	textUpgrades[6].setString("7.INCREASED RUN SPEED");
-	if(player->GetUpgradeCnt(6) > 2)
+	if(player->GetUpgradeCnt(6) > maxSpeedUpCnt)
 		textUpgrades[6].setString("7.INCREASED RUN SPEED (MAX)");
 }
 

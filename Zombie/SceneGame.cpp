@@ -201,14 +201,27 @@ void SceneGame::Update(float dt)
 		{
 			SpawnZombies(5);
 			player->SetSpawnCnt(player->GetSpawnCnt() - 1);
-			if (player->GetWave() > 5 && player->GetSpawnCnt() == 0)
+			eliteZombieSpawnCnt--;
+			if (eliteZombieSpawnCnt == 0)
+			{
 				SpawnEliteZombies(1);
+				eliteZombieSpawnCnt = player->GetWave()+1;
+				if (player->GetWave() > 8)
+					eliteZombieSpawnCnt = (player->GetWave()+1) / 2;
+				if (player->GetWave() > 12)
+					eliteZombieSpawnCnt = 3;
+				if (player->GetWave() > 16)
+					eliteZombieSpawnCnt = 2;
+				if (player->GetWave() > 20)
+					eliteZombieSpawnCnt = 1;
+			}
+
 			skipPreventer = true;
 		}
 	}
-	if (itemSpawnTimer > itemSpawnDuration && items.size() < 4)
+	if (itemSpawnTimer > itemSpawnDuration && items.size() < currentTileSize/75)
 	{
-		itemSpawnTimer -= itemSpawnDuration;
+		itemSpawnTimer = 0;
 		SpawnItem(1);
 	}
 
@@ -242,6 +255,8 @@ void SceneGame::Update(float dt)
 			isUpgrading = true;
 			uiUpgrade->SetClickBlocker(0.5);
 			uiUpgrade->SetActive(true);
+			ResizeTile();
+			player->ResetMovableBounds();
 			FRAMEWORK.SetTimeScale(0.f);
 		}
 	}
@@ -251,7 +266,7 @@ void SceneGame::Draw(sf::RenderWindow& window)
 {
 	Scene::Draw(window);
 
-	const sf::View& saveveiw = window.getView();
+	const sf::View& saveview = window.getView();
 
 	window.draw(cursor);
 }
@@ -268,10 +283,10 @@ void SceneGame::SpawnZombies(int count)
 		zombie->SetType(zombieType);
 
 		sf::Vector2f pos;
-		pos.x = Utils::RandomRange(tileMap->GetGlobalBounds().left,
-			tileMap->GetGlobalBounds().left + tileMap->GetGlobalBounds().width);
-		pos.y = Utils::RandomRange(tileMap->GetGlobalBounds().top,
-			tileMap->GetGlobalBounds().top + tileMap->GetGlobalBounds().height);
+		pos.x = Utils::RandomRange(player->GetMovableBounds().left,
+			player->GetMovableBounds().left + player->GetMovableBounds().width);
+		pos.y = Utils::RandomRange(player->GetMovableBounds().top,
+			player->GetMovableBounds().top + player->GetMovableBounds().height);
 		zombie->SetPosition(pos);
 
 		AddGo(zombie);
@@ -290,10 +305,10 @@ void SceneGame::SpawnEliteZombies(int count)
 		zombie->SetType(zombieType);
 
 		sf::Vector2f pos;
-		pos.x = Utils::RandomRange(tileMap->GetGlobalBounds().left,
-			tileMap->GetGlobalBounds().left + tileMap->GetGlobalBounds().width);
-		pos.y = Utils::RandomRange(tileMap->GetGlobalBounds().top,
-			tileMap->GetGlobalBounds().top + tileMap->GetGlobalBounds().height);
+		pos.x = Utils::RandomRange(player->GetMovableBounds().left,
+			player->GetMovableBounds().left + player->GetMovableBounds().width);
+		pos.y = Utils::RandomRange(player->GetMovableBounds().top,
+			player->GetMovableBounds().top + player->GetMovableBounds().height);
 		zombie->SetPosition(pos);
 
 		AddGo(zombie);
@@ -345,6 +360,8 @@ void SceneGame::OnZombieDie(Zombie* zombie)
 	dieEffect->SetOrigin(Origins::MC);
 	dieEffect->SetPosition(zombie->GetPosition());
 	zombieDieEffects.push_back(dieEffect);
+	if ((int)zombie->GetType() < 3)
+		dieEffect->SetScale({ 1.f,1.f });
 	if (zombie->GetName() == "Bloater")
 		dieEffect->SetScale({ 1.6f,1.6f });
 	if ((int)zombie->GetType() > 3)
@@ -427,10 +444,31 @@ int SceneGame::GetItemSpawnSpeed()
 	return itemSpawnSpeed;
 }
 
+void SceneGame::ViewController(sf::RenderWindow& window)
+{
+	const sf::View& saveview = window.getView();
+}
+
 void SceneGame::SetIndicator(int info, sf::Sprite sprite, sf::Color color)
 {
 	Indicator* indicator = indicatorPool.Take();
 	AddGo(indicator);
 	indicator->SetIndicator(info, sprite, color);
 	indicators.push_back(indicator);
+}
+
+void SceneGame::ResizeTile()
+{
+	tileMap->Set({TileCntX(), TileCntY()});
+	currentTileSize = TileCntX() * TileCntY();
+}
+
+int SceneGame::TileCntX()
+{
+	return 15 + (int)(player->GetWave() * 3 / 2);
+}
+
+int SceneGame::TileCntY()
+{
+	return 15 + (int)(player->GetWave());
 }

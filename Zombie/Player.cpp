@@ -69,7 +69,7 @@ void Player::Release()
 
 void Player::Reset()
 {
-	playerMaxHp = 50+25*upgradeCnt[3];
+	playerMaxHp = 50+25*upgradeCnt[3] * cheatMtp;
 	playerHp = playerMaxHp;
 	speedShootReload = 100 +20*upgradeCnt[0];
 	playerDamage = 20 + 5 * upgradeCnt[1];
@@ -80,7 +80,7 @@ void Player::Reset()
 	speed = 125 + 25 * upgradeCnt[6];
 	hpPickupMtp = 2 + 2*upgradeCnt[4];
 	bulletPickupMtp = 3 + 1 * upgradeCnt[5];
-	wave = 1 +  upgradeCnt[7];
+	wave = 1;
 	spawnCnt = 1;
 
 	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
@@ -92,7 +92,10 @@ void Player::Reset()
 		(tileMap->GetGlobalBounds().height + tileMap->GetGlobalBounds().top * 2) / 2
 		}
 	);
-	movableBounds = tileMap->GetGlobalBounds();
+	tileMap->Set({ 15,15 });
+
+	ResetMovableBounds();
+
 	SetRotation(Pi / 2);
 	direction = { 0.f,0.f };		
 }
@@ -130,22 +133,6 @@ void Player::Update(float dt)
 	}
 	look = Utils::GetNormal(mouseWorldPos - position);
 
-	if (GetPosition().x < movableBounds.left)
-	{
-		SetPosition({ movableBounds.left,GetPosition().y });
-	}
-	if (GetPosition().x > movableBounds.left + movableBounds.width)
-	{
-		SetPosition({ movableBounds.left + movableBounds.width,GetPosition().y });
-	}
-	if (GetPosition().y < movableBounds.top)
-	{
-		SetPosition({ GetPosition().x, movableBounds.top});
-	}
-	if (GetPosition().y > movableBounds.top + movableBounds.height)
-	{
-		SetPosition({ GetPosition().x, movableBounds.top + movableBounds.height});
-	}
 	SetRotation(Utils::Angle(look));
 	float reloadDebuff = 1.f;
 	if (isReloading)
@@ -218,6 +205,8 @@ void Player::FixedUpdate(float dt)
 			break;
 		}
 	}
+
+	RepositionInBounds();
 	
 	if (score > highScore)
 	{
@@ -241,6 +230,40 @@ void Player::Draw(sf::RenderWindow& window)
 	window.draw(body);
 	if (debugBox.IsVisible())
 		debugBox.Draw(window);
+}
+
+void Player::ResetMovableBounds()
+{
+	movableBounds = tileMap->GetGlobalBounds();
+	movableBounds.left += tileMap->GetCellSize().x;
+	movableBounds.top += tileMap->GetCellSize().y;
+	movableBounds.width -= tileMap->GetCellSize().x * 2;
+	movableBounds.height -= tileMap->GetCellSize().y * 2;
+}
+
+sf::FloatRect Player::GetMovableBounds()
+{
+	return movableBounds;
+}
+
+void Player::RepositionInBounds()
+{
+	if (GetPosition().x < movableBounds.left)
+	{
+		SetPosition({ movableBounds.left,GetPosition().y });
+	}
+	if (GetPosition().x > movableBounds.left + movableBounds.width)
+	{
+		SetPosition({ movableBounds.left + movableBounds.width,GetPosition().y });
+	}
+	if (GetPosition().y < movableBounds.top)
+	{
+		SetPosition({ GetPosition().x, movableBounds.top });
+	}
+	if (GetPosition().y > movableBounds.top + movableBounds.height)
+	{
+		SetPosition({ GetPosition().x, movableBounds.top + movableBounds.height });
+	}
 }
 
 void Player::SetPlayerHp(int Hp_in)

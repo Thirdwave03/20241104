@@ -46,6 +46,8 @@ protected:
 	Player* player = nullptr;
 	SceneGame* sceneGame = nullptr;
 
+	sf::FloatRect movableBounds;
+
 	float statMultiplier = 1.f;
 
 public:
@@ -68,7 +70,11 @@ public:
 	void Release() override;
 	void Reset() override;
 	void Update(float dt) override;
+	void FixedUpdate(float dt) override;
 	void Draw(sf::RenderWindow& window) override;
+
+	sf::FloatRect GetMovableBounds();
+	void RepositionInBounds();
 
 	void SetType(Types type);
 	Types GetType() { return types; }

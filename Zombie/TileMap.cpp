@@ -57,7 +57,7 @@ void TileMap::Init()
 	sortingLayer = SortingLayers::Background;
 	sortingOrder = -1;
 
-	Set({ 20, 20 }, { 50.f, 50.f});
+	Set({ 15, 15 }, { 50.f, 50.f});
 	SetOrigin(Origins::MC);
 	SetScale({ 1.f,1.f });	
 }
