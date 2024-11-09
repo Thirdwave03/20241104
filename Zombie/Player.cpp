@@ -69,19 +69,20 @@ void Player::Release()
 
 void Player::Reset()
 {
-	playerMaxHp = 50;
-	playerHp = 50;
-	speedShootReload = 100;
-	playerDamage = 20;
-	bulletCnt = 6;
-	clipSize = 6;
+	playerMaxHp = 50+25*upgradeCnt[3];
+	playerHp = playerMaxHp;
+	speedShootReload = 100 +20*upgradeCnt[0];
+	playerDamage = 20 + 5 * upgradeCnt[1];
+	clipSize = 6 + 1 * upgradeCnt[2];
+	bulletCnt = clipSize;
+	spareBullet = clipSize;
 	score = 0;
-	speed = 150;
-	spareBullet = 6;
-	hpPickupMtp = 2;
-	bulletPickupMtp = 3;
-	wave = 1;
+	speed = 125 + 25 * upgradeCnt[6];
+	hpPickupMtp = 2 + 2*upgradeCnt[4];
+	bulletPickupMtp = 3 + 1 * upgradeCnt[5];
+	wave = 1 +  upgradeCnt[7];
 	spawnCnt = 1;
+
 	sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
 	body.setTexture(TEXTURE_MGR.Get(textureId));
 	SetOrigin(originPreset);
@@ -182,6 +183,7 @@ void Player::Update(float dt)
 	else
 		debugBox.SetDebugBoxColor(sf::Color::Green);
 	
+
 }
 
 void Player::FixedUpdate(float dt)
@@ -211,9 +213,25 @@ void Player::FixedUpdate(float dt)
 			playerHp += temp.y * hpPickupMtp;
 			debugItemTimer = 0.25f;
 			playerHp = Utils::Clamp(playerHp, 0, playerMaxHp);
-			spareBullet = Utils::Clamp(spareBullet, 0, 60);
+			spareBullet = Utils::Clamp(spareBullet, 0, clipSize*3);
 			dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene())->OnItemPickedUp(item);
 			break;
+		}
+	}
+	
+	if (score > highScore)
+	{
+		highScore = score;
+		SAVE_MGR.ResetHighScore(highScore);
+	}
+
+	for (int i = 0; i < 7; i++)
+	{
+		if (upgradeCnt[i] > newUpgradeCnt[i])
+		{
+			newUpgradeCnt[i] = upgradeCnt[i];
+			SAVE_MGR.SetUpgradeCntFromGame(i, newUpgradeCnt[i]);
+			SAVE_MGR.SaveUpgradeCnt();
 		}
 	}
 }
@@ -288,6 +306,16 @@ int Player::GetScore()
 void Player::SetScore(int score)
 {
 	this->score = score;
+}
+
+int Player::GetHighScore()
+{
+	return highScore;
+}
+
+void Player::SetHighScore(int score_in)
+{
+	highScore = score_in;
 }
 
 int Player::GetWave()
@@ -441,9 +469,57 @@ void Player::ResetItemSpawnSpeed()
 	sceneGame->SetItemSpawnSpeed(100);
 }
 
+void Player::SetPowerOverwhelming(bool active)
+{
+	powerOverwhelming = active;
+	if (active)
+	{
+		playerMaxHp = 500;
+		speedShootReload = 300;
+		playerDamage = 100;
+		bulletCnt = 18;
+		clipSize = 6;
+		speed = 300;
+		spareBullet = 18;
+		hpPickupMtp = 2;
+		bulletPickupMtp = 3;
+		wave = 1;
+		spawnCnt = 1;
+	}
+}
+
+void Player::WhenPowerOverWhemling()
+{
+	playerHp = playerMaxHp;
+}
+
 void Player::StageClearReset()
 {
 	playerHp = playerMaxHp;
 	bulletCnt = clipSize;
 	spareBullet = clipSize;
+}
+
+int Player::GetUpgradeCnt(int index)
+{
+	return upgradeCnt[index];
+}
+
+int* Player::GetUpgradeCntArr()
+{
+	return upgradeCnt;
+}
+
+void Player::SetUpgradeCnt(int index, int value)
+{
+	upgradeCnt[index] = value;
+}
+
+void Player::GetSavedUpgradeCnt()
+{
+	SAVE_MGR.LoadUpgradeCnt();
+	for (int i = 0; i < 7; i++)
+	{
+		upgradeCnt[i] = SAVE_MGR.GetSavedUpgradeCnt(i);
+	}
 }

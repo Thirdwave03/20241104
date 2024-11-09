@@ -36,6 +36,7 @@ protected:
 	int tobeReloadedBulletCnt = 0;
 
 	int score = 0;
+	int highScore = 0;
 
 	int zombieCount = 0;
 
@@ -45,9 +46,14 @@ protected:
 	int hpPickupMtp = 0;
 	int bulletPickupMtp = 0;
 
+	int upgradeCnt[8] = { 0 };
+	int newUpgradeCnt[8] = { 0 };
+
 	bool isReloading = false;
 	float reloadTimer = 0.f;
 	const float reloadSpeed = 3.f;
+
+	bool powerOverwhelming = false;
 
 	SceneGame* sceneGame;
 	TileMap* tileMap;
@@ -89,6 +95,10 @@ public:
 	int GetScore();
 	void SetScore(int score);
 
+	int GetHighScore();
+	void SetHighScore(int score_in);
+
+
 	int GetWave();
 	void SetWave(int wave);
 
@@ -121,5 +131,14 @@ public:
 	void AddItemSpawnSpeed(int spawnspeed);
 	void ResetItemSpawnSpeed();
 
+	void SetPowerOverwhelming(bool active);
+	void WhenPowerOverWhemling();
+
 	void StageClearReset();
+
+	int GetUpgradeCnt(int index);
+	int* GetUpgradeCntArr();
+	void SetUpgradeCnt(int index, int value);
+
+	void GetSavedUpgradeCnt();
 };

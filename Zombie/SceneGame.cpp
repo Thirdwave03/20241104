@@ -32,6 +32,12 @@ void SceneGame::Init()
 	uiNotification = AddGo(new UiNotification("UiNotification"));
 	uiNotification->SetActive(false);
 
+	player->SetHighScore(SAVE_MGR.GetSavedHighScore());
+	for (int i = 0; i < 7; i++)
+	{
+		player->SetUpgradeCnt(i, SAVE_MGR.GetSavedUpgradeCnt(i));
+	}
+	itemSpawnSpeed += 5 * (player->GetUpgradeCnt(4) + player->GetUpgradeCnt(5));
 	Scene::Init();
 }
 
@@ -45,7 +51,7 @@ void SceneGame::Enter()
 	isDead = false;
 	FRAMEWORK.SetTimeScale(1.f);
 	SOUND_MGR.StopBgm();
-	SOUND_MGR.PlayBgm("sound/deadByDaylight.mp3");
+	SOUND_MGR.PlayBgm("sound/deadByDaylight.mp3", true);
 	SOUND_MGR.SetBgmVolume(50.f);
 
 	FRAMEWORK.GetWindow().setMouseCursorVisible(false);
@@ -156,6 +162,12 @@ void SceneGame::Update(float dt)
 	{
 		SpawnEliteZombies(1);
 	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::U))
+	{
+		player->SetPowerOverwhelming(true);
+		uiNotification->SetActive(true);
+		uiNotification->IndicaterNoBullet();
+	}
 	if (InputMgr::GetKeyDown(sf::Keyboard::Num9))
 	{
 		this->TurnDebugBox(true);
@@ -172,6 +184,11 @@ void SceneGame::Update(float dt)
 	{
 		uiGameOver->SetActive(!uiGameOver->IsActive());
 	}
+	if (InputMgr::GetKeyDown(sf::Keyboard::F1))
+	{
+		SAVE_MGR.SaveUpgradeCnt();
+	}
+	
 	if (InputMgr::GetKeyDown(sf::Keyboard::R))
 	{
 		player->CallReload();
@@ -290,7 +307,7 @@ void SceneGame::SpawnItem(int count)
 		Item* item = itemPool.Take();
 		items.push_back(item);
 
-		Item::ItemTypes itemType = (Item::ItemTypes)Utils::RandomRange(0, Item::TotalItemTypes - 1);
+		Item::ItemTypes itemType = (Item::ItemTypes)Utils::Clamp(Utils::RandomRange(-1, Item::TotalItemTypes - 1), 0, 1);
 		item->SetType(itemType);
 
 		sf::Vector2f pos;

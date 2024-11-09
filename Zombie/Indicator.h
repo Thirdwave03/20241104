@@ -24,4 +24,3 @@ public:
     void SetTimer();
     void SetIndicator(int info, sf::Sprite sp, sf::Color color = sf::Color::Red);
 };
-

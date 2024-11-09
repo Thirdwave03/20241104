@@ -7,7 +7,9 @@
 #include <unordered_set>
 #include <algorithm>
 #include <iostream>
+#include <string>
 #include <limits>
+#include <fstream>
 
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
@@ -26,4 +28,4 @@
 #include "ObjectPool.h"
 #include "SoundMgr.h"
 #include "DebugBox.h"
-
+#include "SaveMgr.h"

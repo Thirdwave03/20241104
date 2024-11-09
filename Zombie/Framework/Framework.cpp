@@ -48,7 +48,7 @@ void Framework::Do()
 
         window.clear();
         SCENE_MGR.Draw(window);
-        window.draw(frameText);
+      /*  window.draw(frameText);*/
         window.display();
     }
 }

@@ -244,7 +244,7 @@ void Zombie::OnDamage(int dmg_in)
 	if (Utils::RandomRange(0, 6) == 6)
 	{
 		actualDmg *= 2;
-		actualDmg + Utils::RandomRange(-2, 1);
+		actualDmg += Utils::RandomRange(-2, 1);
 		color_in = sf::Color::Yellow;
 	}
 

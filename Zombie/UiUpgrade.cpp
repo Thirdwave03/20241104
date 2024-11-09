@@ -78,13 +78,22 @@ void UiUpgrade::FixedUpdate(float dt)
 	SceneGame* sceneGame = dynamic_cast<SceneGame*>(SCENE_MGR.GetCurrentScene());
 	sf::Vector2f mPos = sceneGame->ScreenToUi(InputMgr::GetMousePosition());
 
+	
 	for (int i = 0; i < noOfUpgrades; i++)
 	{
+		if (player->GetUpgradeCnt(6) > 2 && i==6)
+		{
+			textUpgrades[i].setFillColor(sf::Color(140,140,140));
+			textUpgrades[6].setString("7.INCREASED RUN SPEED (MAX)");
+			break;
+		}
 		if (textUpgrades[i].getGlobalBounds().contains(mPos))
 		{
 			textUpgrades[i].setFillColor(sf::Color::Red);
-			if(!mouseLocated[i])
+			if (!mouseLocated[i])
+			{
 				SOUND_MGR.PlaySfx("sound/mouseover1.wav");
+			}
 			mouseLocated[i] = true;
 		}
 		else
@@ -92,11 +101,17 @@ void UiUpgrade::FixedUpdate(float dt)
 			textUpgrades[i].setFillColor(sf::Color::White);
 			mouseLocated[i] = false;
 		}
+		
 	}
 	if (InputMgr::GetMouseButtonDown(sf::Mouse::Left) && clickBlockTimer<0.f)
 	{
 		for (int i = 0; i < noOfUpgrades; i++)
 		{
+			if (player->GetUpgradeCnt(6) > 2 && i == 6)
+			{
+				textUpgrades[i].setFillColor(sf::Color(140, 140, 140));
+				break;
+			}
 			if (textUpgrades[i].getGlobalBounds().contains(mPos))
 			{
 				SetUpgrade((UpgradeTypes)i);
@@ -123,6 +138,8 @@ void UiUpgrade::SetUpgradeText()
 	textUpgrades[4].setString("5.MORE AND BETTER HEALTH PICKUPS");
 	textUpgrades[5].setString("6.MORE AND BETTER AMMO PICKUPS");
 	textUpgrades[6].setString("7.INCREASED RUN SPEED");
+	if(player->GetUpgradeCnt(6) > 2)
+		textUpgrades[6].setString("7.INCREASED RUN SPEED (MAX)");
 }
 
 void UiUpgrade::SetClickBlocker(float timer)
@@ -136,33 +153,40 @@ void UiUpgrade::SetUpgrade(UpgradeTypes ugType)
 	switch (ugTypes)
 	{
 	case UpgradeTypes::FireRate:
-		player->SetShootReloadDelay(player->GetShootReloadDelay()+40);
+		player->SetShootReloadDelay(player->GetShootReloadDelay()+20);
+		player->SetUpgradeCnt(0, player->GetUpgradeCnt(0) + 1);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::Damage:
-		player->SetPlayerDamage(player->GetPlayerDamage() + 10);
+		player->SetPlayerDamage(player->GetPlayerDamage() + 5);
+		player->SetUpgradeCnt(1, player->GetUpgradeCnt(1) + 1);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::ClipSize:
-		player->SetClipSize(player->GetClipSize() + 3);
+		player->SetClipSize(player->GetClipSize() + 1);
+		player->SetUpgradeCnt(2, player->GetUpgradeCnt(2) + 1);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::MaxHp:
 		player->SetPlayerMaxHp(player->GetPlayerMaxHp() + 25);
+		player->SetUpgradeCnt(3, player->GetUpgradeCnt(3) + 1);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::HpPickup:
 		player->SetHpPickupMultiplier(player->GetHpPickupMultiplier() + 2);
-		player->AddItemSpawnSpeed(25);
+		player->AddItemSpawnSpeed(5);
+		player->SetUpgradeCnt(4, player->GetUpgradeCnt(4) + 1);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::AmmoPickup:
-		player->SetBulletPickupMultiplier(player->GetBulletPickupMultiplier() + 2);
-		player->AddItemSpawnSpeed(25);
+		player->SetBulletPickupMultiplier(player->GetBulletPickupMultiplier() + 1);
+		player->AddItemSpawnSpeed(5);
+		player->SetUpgradeCnt(5, player->GetUpgradeCnt(5) + 1);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	case UpgradeTypes::Speed:
-		player->SetSpeed(player->GetSpeed() + 50);
+		player->SetSpeed(player->GetSpeed() + 25);
+		player->SetUpgradeCnt(6, player->GetUpgradeCnt(6) + 1);
 		SOUND_MGR.PlaySfx("sound/mousedown1.wav");
 		break;
 	}

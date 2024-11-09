@@ -13,6 +13,7 @@ class UiGameOver;
 class UiNotification;
 class ZombieDieEffect;
 class Indicator;
+
 enum class UpgradeTypes;
 
 class SceneGame :
@@ -44,7 +45,7 @@ protected:
 	ObjectPool<Indicator> indicatorPool;
 
 	float itemSpawnTimer = 0.f;
-	float itemSpawnDuration = 10.f;
+	float itemSpawnDuration = 12.f;
 	int itemSpawnSpeed = 100.f;
 
 	float zombieSpawnTimer = 0.f;

@@ -129,10 +129,15 @@ void UiHud::Update(float dt)
 
 	// Score
 	textScore.setString("SCORE: " + std::to_string(player->GetScore()));
+	Utils::SetOrigin(textScore, Origins::TL);
+	textHighScore.setString("HIGH SCORE: " + std::to_string(player->GetHighScore()));
+	Utils::SetOrigin(textHighScore, Origins::TR);
 
 	// Zombie Count
 	textZombieCount.setString("ZOMBIES: " + std::to_string(player->GetSpawnCnt()*5 + player->GetZombieCount()));
+	Utils::SetOrigin(textZombieCount, Origins::BR);
 	textWave.setString("WAVE: " + std::to_string(player->GetWave()));
+	Utils::SetOrigin(textWave, Origins::BR);
 }
 
 void UiHud::Draw(sf::RenderWindow& window)
